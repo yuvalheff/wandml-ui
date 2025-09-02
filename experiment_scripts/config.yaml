@@ -12,6 +12,14 @@ data_prep:
 feature_prep:
   apply_scaling: true
   scaling_method: "StandardScaler"
+  apply_feature_engineering: true
+  engineered_features:
+    - "SepalRatio"     # SepalLengthCm / SepalWidthCm
+    - "PetalRatio"     # PetalLengthCm / PetalWidthCm
+    - "SepalArea"      # SepalLengthCm * SepalWidthCm
+    - "PetalArea"      # PetalLengthCm * PetalWidthCm
+    - "TotalLength"    # SepalLengthCm + PetalLengthCm
+    - "TotalWidth"     # SepalWidthCm + PetalWidthCm
 
 model_evaluation:
   cv_folds: 5
@@ -25,7 +33,10 @@ model_evaluation:
     - "f1_macro"
 
 model:
-  model_type: "LinearDiscriminantAnalysis"
+  model_type: "RandomForestClassifier"
   model_params:
-    solver: "svd"
-    store_covariance: true
+    n_estimators: 100
+    max_depth: 10
+    min_samples_split: 2
+    min_samples_leaf: 1
+    random_state: 42

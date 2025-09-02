@@ -121,9 +121,16 @@ class ModelPipeline:
         Get the feature names used by the pipeline.
         
         Returns:
-        List[str]: Feature names
+        List[str]: Feature names (including engineered features)
         """
-        return self.data_processor.config.feature_columns.copy()
+        feature_names = self.data_processor.config.feature_columns.copy()
+        
+        # Add engineered feature names if feature engineering is enabled
+        if (hasattr(self.feature_processor.config, 'apply_feature_engineering') and 
+            self.feature_processor.config.apply_feature_engineering):
+            feature_names.extend(self.feature_processor.config.engineered_features)
+            
+        return feature_names
     
     def get_class_names(self) -> List[str]:
         """

@@ -6,6 +6,7 @@ from typing import Union
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
+from sklearn.ensemble import RandomForestClassifier
 
 from iris_species_classification.config import ModelConfig
 
@@ -24,6 +25,8 @@ class ModelWrapper:
             self.model = LogisticRegression(**self.config.model_params)
         elif self.config.model_type == "SVM":
             self.model = SVC(**self.config.model_params)
+        elif self.config.model_type == "RandomForestClassifier":
+            self.model = RandomForestClassifier(**self.config.model_params)
         else:
             raise ValueError(f"Unsupported model type: {self.config.model_type}")
 

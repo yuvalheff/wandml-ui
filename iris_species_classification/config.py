@@ -19,6 +19,8 @@ class DataConfig:
 class FeaturesConfig:
     apply_scaling: bool
     scaling_method: str
+    apply_feature_engineering: bool
+    engineered_features: List[str]
 
 
 @dataclass
