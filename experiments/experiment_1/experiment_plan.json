@@ -1,0 +1,158 @@
+{
+  "experiment_name": "Baseline LDA Classification",
+  "task_type": "multi-class classification",
+  "target_column": "Species",
+  "evaluation_metric": "Macro-averaged AUC",
+  
+  "preprocessing_steps": {
+    "data_loading": {
+      "train_path": "/Users/yuvalheffetz/ds-agent-projects/session_d4b0eb9f-8fbe-4190-b004-6f780e178fe3/data/train_set.csv",
+      "test_path": "/Users/yuvalheffetz/ds-agent-projects/session_d4b0eb9f-8fbe-4190-b004-6f780e178fe3/data/test_set.csv",
+      "target_column": "Species",
+      "feature_columns": ["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"],
+      "drop_columns": ["Id"]
+    },
+    "scaling": {
+      "method": "StandardScaler",
+      "fit_on": "training_set",
+      "apply_to": ["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"],
+      "rationale": "Exploration experiments showed StandardScaler provides optimal performance, and features have different scales (sepal width: 2.0-4.4 vs petal length: 1.1-6.9)"
+    },
+    "target_encoding": {
+      "method": "LabelEncoder",
+      "classes": ["Iris-setosa", "Iris-versicolor", "Iris-virginica"]
+    }
+  },
+  
+  "feature_engineering_steps": {
+    "strategy": "use_original_features",
+    "features_to_use": ["SepalLengthCm", "SepalWidthCm", "PetalLengthCm", "PetalWidthCm"],
+    "rationale": "Exploration experiments demonstrated that original features achieve near-perfect performance (98.3% accuracy, 1.00 macro-AUC). Feature engineering provided minimal benefit and may introduce unnecessary complexity.",
+    "rejected_approaches": [
+      {
+        "approach": "ratio_features",
+        "reason": "Sepal/Petal ratios showed no improvement over original features"
+      },
+      {
+        "approach": "area_features", 
+        "reason": "Sepal/Petal area approximations showed no improvement over original features"
+      }
+    ]
+  },
+  
+  "model_selection_steps": {
+    "primary_algorithm": {
+      "name": "LinearDiscriminantAnalysis",
+      "parameters": {
+        "solver": "svd",
+        "store_covariance": true
+      },
+      "rationale": "LDA achieved perfect macro-AUC (1.00) in exploration experiments and is theoretically well-suited for this linearly separable multi-class problem. It provides probabilistic outputs needed for AUC calculation."
+    },
+    "backup_algorithms": [
+      {
+        "name": "LogisticRegression",
+        "parameters": {
+          "max_iter": 1000,
+          "random_state": 42,
+          "multi_class": "ovr"
+        },
+        "rationale": "Achieved 99.8% macro-AUC in exploration, provides good interpretability"
+      },
+      {
+        "name": "SVM",
+        "parameters": {
+          "kernel": "linear",
+          "probability": true,
+          "random_state": 42
+        },
+        "rationale": "Achieved 97.5% accuracy and excellent macro-AUC in exploration"
+      }
+    ],
+    "cross_validation": {
+      "method": "StratifiedKFold",
+      "n_splits": 5,
+      "shuffle": true,
+      "random_state": 42
+    }
+  },
+  
+  "evaluation_strategy": {
+    "primary_metric": "macro_averaged_auc",
+    "calculation_method": "one_vs_rest_averaging",
+    "secondary_metrics": ["accuracy", "precision_macro", "recall_macro", "f1_macro"],
+    
+    "analysis_components": [
+      {
+        "analysis_type": "confusion_matrix",
+        "purpose": "Identify which species pairs are most difficult to distinguish"
+      },
+      {
+        "analysis_type": "class_wise_auc",
+        "purpose": "Understand AUC performance for each species (Iris-setosa vs others, Iris-versicolor vs others, Iris-virginica vs others)"
+      },
+      {
+        "analysis_type": "feature_importance",
+        "method": "LDA_feature_weights",
+        "purpose": "Identify which measurements (sepal/petal length/width) contribute most to classification"
+      },
+      {
+        "analysis_type": "decision_boundary_visualization",
+        "method": "2d_projection_lda",
+        "purpose": "Visualize how well the model separates species in the transformed feature space"
+      },
+      {
+        "analysis_type": "prediction_confidence",
+        "method": "probability_distribution_analysis", 
+        "purpose": "Analyze model confidence for correct vs incorrect predictions"
+      },
+      {
+        "analysis_type": "per_species_performance",
+        "metrics": ["precision", "recall", "f1_score"],
+        "purpose": "Identify if any species (setosa, versicolor, virginica) has systematically lower performance"
+      }
+    ],
+    
+    "validation_approach": {
+      "cross_validation": "5-fold stratified CV for model selection",
+      "final_evaluation": "holdout test set (30 samples, 10 per class)",
+      "bootstrap_confidence": "1000 bootstrap samples for confidence intervals on test performance"
+    }
+  },
+  
+  "expected_outputs": {
+    "model_artifacts": [
+      "trained_lda_model.pkl",
+      "feature_scaler.pkl",
+      "label_encoder.pkl"
+    ],
+    "evaluation_results": [
+      "macro_auc_score.json",
+      "classification_report.json", 
+      "confusion_matrix.png",
+      "feature_importance_plot.png",
+      "decision_boundary_plot.png",
+      "class_auc_scores.json"
+    ],
+    "analysis_reports": [
+      "model_performance_report.md",
+      "feature_analysis_report.md"
+    ]
+  },
+  
+  "success_criteria": {
+    "primary": "Macro-averaged AUC >= 0.95 on test set",
+    "secondary": [
+      "Accuracy >= 0.90 on test set",
+      "All classes achieve individual AUC >= 0.90",
+      "No class has F1-score < 0.85"
+    ]
+  },
+  
+  "implementation_notes": {
+    "dataset_characteristics": "Perfectly balanced 3-class problem with 4 numerical features, no missing values",
+    "computational_complexity": "Low - simple linear model with small dataset (120 training samples)",
+    "expected_runtime": "< 1 minute for full pipeline including evaluation",
+    "reproducibility": "Set random_state=42 for all stochastic components"
+  }
+}

@@ -1,20 +1,31 @@
 data_prep:
-  dataset: "name"
-  version: "version"
-  dataset_name: "dataset_name"
-  placeholder: "placeholder"
+  dataset_name: "Iris Species Classification"
+  feature_columns: 
+    - "SepalLengthCm"
+    - "SepalWidthCm" 
+    - "PetalLengthCm"
+    - "PetalWidthCm"
+  target_column: "Species"
+  drop_columns:
+    - "Id"
   
 feature_prep:
-  placeholder: "placeholder"
+  apply_scaling: true
+  scaling_method: "StandardScaler"
 
 model_evaluation:
-    split_ratio: 0.2
-    placeholder: "placeholder"
+  cv_folds: 5
+  cv_shuffle: true
+  random_state: 42
+  primary_metric: "macro_averaged_auc"
+  secondary_metrics:
+    - "accuracy"
+    - "precision_macro"
+    - "recall_macro"
+    - "f1_macro"
 
 model:
-    model_type: "model_type"
-    model_params: Dict[str, Any]
-    placeholder: "placeholder"
-
-
-
+  model_type: "LinearDiscriminantAnalysis"
+  model_params:
+    solver: "svd"
+    store_covariance: true

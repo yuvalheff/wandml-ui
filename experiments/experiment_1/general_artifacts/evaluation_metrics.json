@@ -1,0 +1,53 @@
+{
+  "accuracy": 1.0,
+  "precision_macro": 1.0,
+  "recall_macro": 1.0,
+  "f1_macro": 1.0,
+  "macro_averaged_auc": 1.0,
+  "per_class_metrics": {
+    "Iris-setosa": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 10.0
+    },
+    "Iris-versicolor": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 10.0
+    },
+    "Iris-virginica": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 10.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 30.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 30.0
+    }
+  },
+  "class_auc_scores": {
+    "Iris-setosa": 1.0,
+    "Iris-versicolor": 1.0,
+    "Iris-virginica": 1.0
+  },
+  "cv_accuracy_mean": 0.975,
+  "cv_accuracy_std": 0.03333333333333334,
+  "cv_precision_macro_mean": 0.9792592592592593,
+  "cv_precision_macro_std": 0.02707506204814384,
+  "cv_recall_macro_mean": 0.975,
+  "cv_recall_macro_std": 0.03333333333333334,
+  "cv_f1_macro_mean": 0.9747027699968877,
+  "cv_f1_macro_std": 0.03381318620930142
+}
